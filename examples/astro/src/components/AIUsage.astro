@@ -1,0 +1,221 @@
+---
+import {
+  deriveTier,
+  DIMS,
+  LEVEL_TO_INT,
+  type Dimension,
+  type Level,
+} from "../lib/aius/derive";
+import { TIER_GLYPHS, TIER_LABELS } from "../lib/aius/glyphs";
+
+export interface Props {
+  ai: {
+    ideation: Level;
+    research: Level;
+    drafting: Level;
+    editing: Level;
+    code: Level;
+    visuals: Level;
+    models?: string[];
+    aius_version?: string;
+  };
+  date?: Date;
+}
+
+const { ai, date } = Astro.props;
+const tier = deriveTier(ai);
+const tierLabel = TIER_LABELS[tier];
+const tierGlyph = TIER_GLYPHS[tier];
+const aiusVersion = ai.aius_version ?? "1.0";
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+const rows = DIMS.map((d: Dimension) => ({
+  name: d,
+  level: LEVEL_TO_INT[ai[d]],
+  isLead: ai[d] === "lead",
+}));
+---
+
+<aside class="aius" aria-label="AI usage disclosure">
+  <header>
+    <span class="brand">AI Usage</span>
+    <span class="sep" aria-hidden="true">·</span>
+    <span class="tier" data-tier={tier}>
+      <span class="glyph" aria-hidden="true">{tierGlyph}</span>
+      <span class="label">{tierLabel}</span>
+    </span>
+    {date && <span class="date">{fmt(date)}</span>}
+  </header>
+
+  <dl class="rows">
+    {
+      rows.map((r) => (
+        <div
+          class:list={["row", { lead: r.isLead }]}
+          role="meter"
+          aria-valuenow={r.level}
+          aria-valuemin={0}
+          aria-valuemax={3}
+          aria-label={`${r.name} level ${r.level} of 3`}
+        >
+          <dt>{r.name}</dt>
+          <dd>
+            <span class="track" aria-hidden="true">
+              {[1, 2, 3].map((i) => (
+                <span class:list={["seg", { on: r.level >= i }]} />
+              ))}
+            </span>
+            <span class="num">{r.level}/3</span>
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+
+  {
+    ai.models && ai.models.length > 0 && (
+      <p class="models">
+        <span class="models-label">models</span>
+        <span class="sep" aria-hidden="true">·</span>
+        {ai.models.join(", ")}
+      </p>
+    )
+  }
+
+  <p class="provenance">
+    <a href="/standards/ai-usage">AIUS v{aiusVersion}</a>
+  </p>
+</aside>
+
+<style>
+  .aius {
+    margin: 28px 0;
+    padding: 14px 0;
+    border-top: 2px solid var(--fg);
+    border-bottom: 1px solid var(--rule);
+    font-family: "Inter Variable", sans-serif;
+    font-size: 13px;
+    color: var(--fg);
+  }
+  .aius header {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .aius .brand {
+    font-size: 11px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    font-weight: 500;
+  }
+  .aius .sep {
+    color: var(--fg-dim);
+  }
+  .aius .tier {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .aius .glyph {
+    font-size: 14px;
+  }
+  .aius .date {
+    margin-left: auto;
+    font-size: 11px;
+    letter-spacing: 0.4px;
+    color: var(--fg-dim);
+  }
+  .aius .rows {
+    margin: 0 0 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .aius .row {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    align-items: center;
+    gap: 12px;
+  }
+  .aius .row dt {
+    font-size: 10px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+  }
+  .aius .row dd {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .aius .track {
+    display: inline-flex;
+    gap: 2px;
+    flex: 1;
+    height: 8px;
+    max-width: 240px;
+  }
+  .aius .seg {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.06);
+  }
+  .aius .seg.on {
+    background: var(--fg);
+  }
+  .aius .row.lead dt,
+  .aius .row.lead .num {
+    font-weight: 600;
+    color: var(--fg);
+  }
+  .aius .row.lead .seg.on {
+    background: var(--accent);
+  }
+  .aius .num {
+    font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+    font-size: 10px;
+    color: var(--fg-dim);
+    min-width: 28px;
+    text-align: right;
+  }
+  .aius .models {
+    margin: 0 0 4px;
+    font-size: 11px;
+    color: var(--fg-muted);
+  }
+  .aius .models-label {
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+  }
+  .aius .provenance {
+    margin: 0;
+    font-size: 10px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+  }
+  .aius .provenance a {
+    color: var(--fg-dim);
+    text-decoration: none;
+  }
+  .aius .provenance a:hover {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+</style>

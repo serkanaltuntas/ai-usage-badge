@@ -1,0 +1,63 @@
+---
+import AIUsage from "../components/AIUsage.astro";
+import AIUsageMini from "../components/AIUsageMini.astro";
+import type { Level } from "../lib/aius/derive";
+
+const ex = (
+  ideation: Level,
+  research: Level,
+  drafting: Level,
+  editing: Level,
+  code: Level,
+  visuals: Level,
+  models?: string[],
+) => ({ ideation, research, drafting, editing, code, visuals, models });
+
+const examples = [
+  { tier: "human-only", ai: ex("none","none","none","none","none","none") },
+  { tier: "ai-assisted", ai: ex("none","assist","none","assist","none","none",["claude-opus-4-7"]) },
+  { tier: "co-authored", ai: ex("collab","collab","collab","assist","none","none",["claude-opus-4-7","gpt-5"]) },
+  { tier: "ai-led", ai: ex("collab","assist","lead","lead","lead","none",["claude-opus-4-7","gpt-5"]) },
+  { tier: "ai-generated", ai: ex("lead","lead","lead","lead","lead","lead",["claude-opus-4-7"]) },
+];
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>AIUS — Astro reference example</title>
+    <style>
+      :root {
+        --bg: #f9f6ec;
+        --fg: #1a1a1a;
+        --fg-muted: #555;
+        --fg-dim: #888;
+        --rule: rgba(0, 0, 0, 0.08);
+        --accent: #d9391e;
+      }
+      body {
+        background: var(--bg);
+        color: var(--fg);
+        font-family: system-ui, sans-serif;
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 56px 32px;
+      }
+      h1 { font-size: 32px; margin: 0 0 8px; }
+      .lede { color: var(--fg-muted); margin: 0 0 40px; }
+      h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--fg-dim); margin: 32px 0 12px; }
+      .mini-row { margin-top: 8px; }
+    </style>
+  </head>
+  <body>
+    <h1>AIUS — Astro reference example</h1>
+    <p class="lede">All five tiers, rendered by the same component the canonical site uses.</p>
+    {examples.map((e) => (
+      <section>
+        <h2>{e.tier}</h2>
+        <AIUsage ai={e.ai} />
+        <div class="mini-row"><AIUsageMini ai={e.ai} /></div>
+      </section>
+    ))}
+  </body>
+</html>

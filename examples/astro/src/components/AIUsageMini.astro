@@ -1,0 +1,71 @@
+---
+import {
+  deriveTier,
+  DIMS,
+  LEVEL_TO_INT,
+  type Level,
+} from "../lib/aius/derive";
+import { TIER_GLYPHS, TIER_LABELS } from "../lib/aius/glyphs";
+
+export interface Props {
+  ai: {
+    ideation: Level;
+    research: Level;
+    drafting: Level;
+    editing: Level;
+    code: Level;
+    visuals: Level;
+    models?: string[];
+    aius_version?: string;
+  };
+}
+
+const { ai } = Astro.props;
+const tier = deriveTier(ai);
+const dimCode = DIMS.map((d) => `${d.charAt(0)}${LEVEL_TO_INT[ai[d]]}`).join(
+  "·",
+);
+const modelsText = ai.models && ai.models.length > 0 ? ai.models.join(", ") : "no models";
+const tooltip = `${TIER_LABELS[tier]} — ${modelsText}`;
+---
+
+<span class="aius-mini" title={tooltip}>
+  <span class="glyph" aria-hidden="true">{TIER_GLYPHS[tier]}</span>
+  <span class="tier">{tier}</span>
+  <span class="sep" aria-hidden="true">·</span>
+  <span class="dims">{dimCode}</span>
+  <span class="sr-only">— {TIER_LABELS[tier]}</span>
+</span>
+
+<style>
+  .aius-mini {
+    position: relative;
+    font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--fg-dim);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 0.4px;
+  }
+  .aius-mini .glyph {
+    color: var(--accent);
+    font-size: 13px;
+    font-family: "Inter Variable", sans-serif;
+  }
+  .aius-mini .tier {
+    color: var(--fg);
+  }
+  .aius-mini .sep,
+  .aius-mini .dims {
+    color: var(--fg-dim);
+  }
+  .aius-mini .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+</style>
