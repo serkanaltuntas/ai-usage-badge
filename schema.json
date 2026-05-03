@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://serkan.ai/standards/ai-usage/schema.json",
+  "title": "AI Usage Standard (AIUS) v1.0 — frontmatter",
+  "description": "Schema for the `ai` frontmatter object declared on every artifact published under AIUS.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["ideation", "research", "drafting", "editing", "code", "visuals"],
+  "properties": {
+    "ideation": { "$ref": "#/$defs/level" },
+    "research": { "$ref": "#/$defs/level" },
+    "drafting": { "$ref": "#/$defs/level" },
+    "editing":  { "$ref": "#/$defs/level" },
+    "code":     { "$ref": "#/$defs/level" },
+    "visuals":  { "$ref": "#/$defs/level" },
+    "models": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "aius_version": {
+      "type": "string",
+      "default": "1.0"
+    }
+  },
+  "$defs": {
+    "level": {
+      "type": "string",
+      "enum": ["none", "assist", "collab", "lead"]
+    }
+  },
+  "allOf": [
+    {
+      "comment": "AIUS Article 5 — models[] non-empty when max(dims) >= 1",
+      "if": {
+        "anyOf": [
+          { "properties": { "ideation": { "not": { "const": "none" } } } },
+          { "properties": { "research": { "not": { "const": "none" } } } },
+          { "properties": { "drafting": { "not": { "const": "none" } } } },
+          { "properties": { "editing": { "not": { "const": "none" } } } },
+          { "properties": { "code": { "not": { "const": "none" } } } },
+          { "properties": { "visuals": { "not": { "const": "none" } } } }
+        ]
+      },
+      "then": {
+        "required": ["models"],
+        "properties": {
+          "models": { "type": "array", "minItems": 1 }
+        }
+      }
+    }
+  ]
+}
