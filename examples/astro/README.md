@@ -23,5 +23,6 @@ both the full and mini badge variants.
 ## Adopt
 
 Copy these files into your own Astro project. The components depend only
-on the two `lib/aius/` files and the two CSS variables `--fg`, `--fg-dim`,
-`--accent`, `--rule`, `--fg-muted` (set them in your global stylesheet).
+on the two `lib/aius/` files and these CSS variables: `--fg`, `--fg-dim`,
+`--fg-muted`, `--accent`, `--rule`, `--track-empty` (set them in your
+global stylesheet).

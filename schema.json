@@ -30,7 +30,7 @@
   },
   "allOf": [
     {
-      "comment": "AIUS Article 5 — models[] non-empty when max(dims) >= 1",
+      "$comment": "AIUS Article 5 — models[] non-empty when max(dims) >= 1",
       "if": {
         "anyOf": [
           { "properties": { "ideation": { "not": { "const": "none" } } } },
