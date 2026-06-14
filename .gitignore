@@ -3,3 +3,6 @@ dist/
 .astro/
 .DS_Store
 *.log
+
+# Local-only context (resume notes, memory snapshots, dev-side scratch)
+.local/
