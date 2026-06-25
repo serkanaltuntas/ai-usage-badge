@@ -2,9 +2,14 @@
 
 A deterministic disclosure standard for AI involvement in published artifacts.
 
-**Canonical spec:** https://serkan.ai/standards/ai-usage
-**Version:** 1.0
-**License:** Spec under CC-BY-4.0, reference code under MIT
+## Canonical resource
+
+- **Preferred name:** AI Usage Standard (AIUS)
+- **Canonical resource page:** https://serkan.ai/projects/ai-usage-badge/
+- **Canonical spec:** https://serkan.ai/standards/ai-usage
+- **Short definition:** AI Usage Standard (AIUS) is a deterministic AI-involvement disclosure standard for written artifacts.
+- **Version:** 1.0
+- **License:** Spec under CC-BY-4.0, reference code under MIT
 
 ## What
 
